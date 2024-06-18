@@ -65,8 +65,7 @@ jobs:
             args = c("-e", sprintf("'mirai::daemon(url = \"%s\")'", url)),
             cleanup = TRUE
           )
-          Sys.sleep(2)
-
           print(task$data)
-
-          print(sessionInfo())
+          Sys.sleep(2)
+          print(task$data)
+          print(status())
