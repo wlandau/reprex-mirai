@@ -1,0 +1,30 @@
+# Interactive debugging with https://github.com/marketplace/actions/debugging-with-tmate helps.
+
+on: [push, pull_request]
+
+name: reprex
+
+jobs:
+  reprex:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install packages
+        run: |
+          install.packages(
+            c("nanonext", "mirai", "processx"),
+            repos = c("https://shikokuchuo.r-universe.dev", "https://cloud.r-project.org")
+          )
+        shell: Rscript {0}
+
+      - name: Run reprex
+        run: R -e reprex.R
