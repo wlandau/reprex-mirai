@@ -19,12 +19,33 @@ jobs:
           use-public-rspm: true
 
       - name: Install packages
+        shell: Rscript {0}
         run: |
           install.packages(
             c("nanonext", "mirai", "processx"),
             repos = c("https://shikokuchuo.r-universe.dev", "https://cloud.r-project.org")
           )
-        shell: Rscript {0}
 
       - name: Run reprex
-        run: R -e reprex.R
+        shell: Rscript {0}
+        run: |
+          library(mirai)
+          daemons(
+            n = 1L,
+            url = "ws://127.0.0.1:0",
+            dispatcher = TRUE,
+            seed = NULL,
+            token = TRUE,
+            retry = TRUE
+          )
+          task <- mirai(TRUE)
+          url <- rownames(status()$daemons)
+          process <- processx::run(
+            command = "R",
+            args = c("-e", sprintf("'mirai::daemon(url = \"%s\")'", url)),
+            cleanup = TRUE
+          )
+
+          print(task$data)
+
+          print(sessionInfo())
